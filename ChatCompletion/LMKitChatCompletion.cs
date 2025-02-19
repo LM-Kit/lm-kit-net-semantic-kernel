@@ -96,8 +96,14 @@ namespace LMKit.SemanticKernel.ChatCompletion
                         promptExecutionSettings);
 
                     chat.AfterTextCompletion += AfterTextCompletion;
-                    await chat.RegenerateResponseAsync(cancellationToken).ConfigureAwait(false);
-                    chat.AfterTextCompletion -= AfterTextCompletion;
+                    try
+                    {
+                        await chat.RegenerateResponseAsync(cancellationToken).ConfigureAwait(false);
+                    }
+                    finally
+                    {
+                        chat.AfterTextCompletion -= AfterTextCompletion;
+                    }
                 }
                 catch (Exception ex)
                 {

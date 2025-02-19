@@ -61,13 +61,16 @@ namespace LMKit.SemanticKernel.TextGeneration
                         SystemPrompt = promptExecutionSettings.SystemPrompt
                     };
 
-                    // Subscribe to the text completion event.
                     chat.AfterTextCompletion += AfterTextCompletion;
 
-                    await chat.SubmitAsync(prompt, cancellationToken).ConfigureAwait(false);
-
-                    // Unsubscribe from the event after completion.
-                    chat.AfterTextCompletion -= AfterTextCompletion;
+                    try
+                    {
+                        await chat.SubmitAsync(prompt, cancellationToken).ConfigureAwait(false);
+                    }
+                    finally
+                    {
+                        chat.AfterTextCompletion -= AfterTextCompletion;
+                    }
                 }
                 catch (Exception ex)
                 {

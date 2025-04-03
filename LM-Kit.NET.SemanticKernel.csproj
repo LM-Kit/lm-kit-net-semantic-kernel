@@ -22,7 +22,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="LM-Kit.NET" Version="2025.4.3" />
+		<PackageReference Include="LM-Kit.NET" Version="2025.4.4" />
 		<PackageReference Include="Microsoft.SemanticKernel.Abstractions" Version="1.44.0" />
 	</ItemGroup>
 

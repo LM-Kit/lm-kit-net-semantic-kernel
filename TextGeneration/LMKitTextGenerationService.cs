@@ -1,9 +1,9 @@
-﻿using LMKit.Model;
+﻿using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
+using LMKit.Model;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Services;
 using Microsoft.SemanticKernel.TextGeneration;
-using System.Collections.Concurrent;
-using System.Runtime.CompilerServices;
 
 namespace LMKit.SemanticKernel.TextGeneration
 {
@@ -128,7 +128,7 @@ namespace LMKit.SemanticKernel.TextGeneration
 
             var result = await chat.SubmitAsync(prompt, cancellationToken).ConfigureAwait(false);
 
-            return new List<TextContent> { new TextContent(result.Completion) };
+            return new List<TextContent> { new(result.Completion) };
         }
 
         /// <summary>

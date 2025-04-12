@@ -1,9 +1,9 @@
-﻿using LMKit.Model;
+﻿using System.Text;
+using System.Text.Json;
+using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
 using Microsoft.SemanticKernel;
-using System.Text;
-using System.Text.Json;
 
 namespace LMKit.SemanticKernel
 {
@@ -18,11 +18,11 @@ namespace LMKit.SemanticKernel
         private const string DEFAULT_SYSTEM_PROMPT = "You are a chatbot that always responds promptly and helpfully to user requests.";
         private const int DEFAULT_MAX_COMPLETION_TOKENS = 512;
 
-        private RepetitionPenalty _repetitionPenalty;
+        private readonly RepetitionPenalty _repetitionPenalty;
         private List<string> _stopSequences;
         private TokenSampling _sampling;
         private Grammar _grammar;
-        private LogitBias _logitBias;
+        private readonly LogitBias _logitBias;
         private int _maximumCompletionTokens;
         private int _resultsPerPrompt;
         private string _systemPrompt;
@@ -112,7 +112,7 @@ namespace LMKit.SemanticKernel
         public LMKitPromptExecutionSettings(LM model)
         {
             _repetitionPenalty = new RepetitionPenalty();
-            _stopSequences = new List<string>();
+            _stopSequences = [];
             _sampling = new RandomSampling();
             _logitBias = new LogitBias(model);
             _maximumCompletionTokens = DEFAULT_MAX_COMPLETION_TOKENS;
@@ -129,13 +129,13 @@ namespace LMKit.SemanticKernel
         internal LMKitPromptExecutionSettings(LMKitPromptExecutionSettings defaultSettings, PromptExecutionSettings promptExecutionSettings)
         {
             _repetitionPenalty = defaultSettings.RepetitionPenalty.Clone();
-            _stopSequences = new List<string>(defaultSettings.StopSequences);
+            _stopSequences = [.. defaultSettings.StopSequences];
             _sampling = defaultSettings.SamplingMode.Clone();
             _logitBias = defaultSettings.LogitBias.Clone();
             _maximumCompletionTokens = defaultSettings.MaximumCompletionTokens;
             _resultsPerPrompt = defaultSettings.ResultsPerPrompt;
             _systemPrompt = defaultSettings.SystemPrompt;
-            _grammar = defaultSettings.Grammar; 
+            _grammar = defaultSettings.Grammar;
 
             if (promptExecutionSettings != null)
             {
@@ -157,8 +157,8 @@ namespace LMKit.SemanticKernel
                 // Serialize the provided prompt execution settings to JSON.
                 var json = JsonSerializer.Serialize(promptExecutionSettings);
                 ReadOnlySpan<byte> jsonSpan = Encoding.UTF8.GetBytes(json);
-                Utf8JsonReader reader = new Utf8JsonReader(jsonSpan);
-                JsonSerializerOptions options = new JsonSerializerOptions();
+                Utf8JsonReader reader = new(jsonSpan);
+                JsonSerializerOptions options = new();
 
                 // Read and apply each setting from the JSON.
                 while (reader.Read() && reader.TokenType != JsonTokenType.EndObject)
@@ -237,7 +237,7 @@ namespace LMKit.SemanticKernel
                             case "STOPSEQUENCES":
                             case "STOP_SEQUENCES":
                                 var stopSeqs = JsonSerializer.Deserialize<IList<string>>(ref reader, options) ?? Array.Empty<string>();
-                                _stopSequences = new List<string>(stopSeqs);
+                                _stopSequences = [.. stopSeqs];
                                 break;
 
                             case "RESULTSPERPROMPT":

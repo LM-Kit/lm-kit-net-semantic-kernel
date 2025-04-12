@@ -1,9 +1,9 @@
-﻿using LMKit.Model;
+﻿using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
+using LMKit.Model;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Services;
-using System.Collections.Concurrent;
-using System.Runtime.CompilerServices;
 
 namespace LMKit.SemanticKernel.ChatCompletion
 {
@@ -50,7 +50,7 @@ namespace LMKit.SemanticKernel.ChatCompletion
             var result = await chat.RegenerateResponseAsync(cancellationToken).ConfigureAwait(false);
             return new List<ChatMessageContent>
             {
-                new ChatMessageContent(AuthorRole.Assistant, result.Completion)
+                new(AuthorRole.Assistant, result.Completion)
             };
         }
 

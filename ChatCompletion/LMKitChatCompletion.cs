@@ -1,11 +1,11 @@
-﻿using System.Collections.Concurrent;
-using System.Runtime.CompilerServices;
-using LMKit.Model;
+﻿using LMKit.Model;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Services;
+using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 
-namespace LMKit.SemanticKernel.ChatCompletion
+namespace LMKit.Integrations.SemanticKernel.ChatCompletion
 {
     /// <summary>
     /// Implements a chat completion service using the LMKit model.

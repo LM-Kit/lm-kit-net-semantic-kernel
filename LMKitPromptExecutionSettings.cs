@@ -1,11 +1,11 @@
-﻿using System.Text;
-using System.Text.Json;
-using LMKit.Model;
+﻿using LMKit.Model;
 using LMKit.TextGeneration;
 using LMKit.TextGeneration.Sampling;
 using Microsoft.SemanticKernel;
+using System.Text;
+using System.Text.Json;
 
-namespace LMKit.SemanticKernel
+namespace LMKit.Integrations.SemanticKernel
 {
     /// <summary>
     /// Provides a bridge between LMKit.NET text generation settings and Microsoft Semantic Kernel prompt execution settings.

@@ -1,11 +1,11 @@
-﻿using System.Collections.Concurrent;
-using System.Runtime.CompilerServices;
-using LMKit.Model;
+﻿using LMKit.Model;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Services;
 using Microsoft.SemanticKernel.TextGeneration;
+using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 
-namespace LMKit.SemanticKernel.TextGeneration
+namespace LMKit.Integrations.SemanticKernel.TextGeneration
 {
     /// <summary>
     /// Implements a text generation service using an LMKit model.

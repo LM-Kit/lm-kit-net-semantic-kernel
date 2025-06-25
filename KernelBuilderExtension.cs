@@ -1,14 +1,14 @@
-﻿using LMKit.Model;
-using LMKit.SemanticKernel.ChatCompletion;
-using LMKit.SemanticKernel.Embeddings;
-using LMKit.SemanticKernel.TextGeneration;
+﻿using LMKit.Integrations.SemanticKernel.ChatCompletion;
+using LMKit.Integrations.SemanticKernel.Embeddings;
+using LMKit.Integrations.SemanticKernel.TextGeneration;
+using LMKit.Model;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Embeddings;
 using Microsoft.SemanticKernel.TextGeneration;
 
-namespace LMKit.SemanticKernel
+namespace LMKit.Integrations.SemanticKernel
 {
     /// <summary>
     /// Provides extension methods for registering LMKit services—chat completion, text generation,

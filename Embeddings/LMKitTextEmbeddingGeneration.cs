@@ -1,42 +1,74 @@
 ﻿using LMKit.Embeddings;
 using LMKit.Model;
-using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.Embeddings;
-using Microsoft.SemanticKernel.Services;
+using Microsoft.Extensions.AI;
 
 namespace LMKit.Integrations.SemanticKernel.Embeddings
 {
-#pragma warning disable SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
     /// <summary>
     /// Provides a text embedding generation service using LMKit's <see cref="Embedder"/>. 
-    /// This service implements the <see cref="ITextEmbeddingGenerationService"/> interface to generate embeddings from text data for use with Microsoft Semantic Kernel.
+    /// This service implements the <see cref="IEmbeddingGenerator{TInput, TEmbedding}"/> interface 
+    /// to generate embeddings from text data for use with Microsoft Semantic Kernel.
     /// </summary>
-    public sealed class LMKitTextEmbeddingGeneration : ITextEmbeddingGenerationService
-#pragma warning restore SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+    public sealed class LMKitTextEmbeddingGeneration : IEmbeddingGenerator<string, Embedding<float>>
     {
         private readonly Embedder _embedder;
+        private readonly EmbeddingGeneratorMetadata _metadata;
 
         /// <inheritdoc/>
-        IReadOnlyDictionary<string, object> IAIService.Attributes => throw new NotImplementedException();
+        public EmbeddingGeneratorMetadata Metadata => _metadata;
 
         /// <summary>
         /// Asynchronously generates embeddings for a collection of text inputs.
         /// </summary>
-        /// <param name="data">A list of text strings for which embeddings are to be generated.</param>
-        /// <param name="kernel">The Semantic Kernel instance invoking this service.</param>
+        /// <param name="values">A collection of text strings for which embeddings are to be generated.</param>
+        /// <param name="options">Optional embedding generation options.</param>
         /// <param name="cancellationToken">A token that can be used to cancel the embedding generation operation.</param>
         /// <returns>
-        /// A task that represents the asynchronous operation. The task result contains a list of <see cref="ReadOnlyMemory{T}"/> instances,
-        /// where each element represents the embedding vector corresponding to an input text.
+        /// A task that represents the asynchronous operation. The task result contains 
+        /// <see cref="GeneratedEmbeddings{TEmbedding}"/> with embedding vectors corresponding to the input texts.
         /// </returns>
-        async Task<IList<ReadOnlyMemory<float>>> IEmbeddingGenerationService<string, float>.GenerateEmbeddingsAsync(
-            IList<string> data,
-            Kernel kernel,
-            CancellationToken cancellationToken)
+        public async Task<GeneratedEmbeddings<Embedding<float>>> GenerateAsync(
+            IEnumerable<string> values,
+            EmbeddingGenerationOptions? options = null,
+            CancellationToken cancellationToken = default)
         {
-            // The following code awaits the embedding generation from the embedder
-            // and converts the result into the expected list format.
-            return [.. await _embedder.GetEmbeddingsAsync(data, cancellationToken)];
+            var inputList = values as IList<string> ?? values.ToList();
+            var results = await _embedder.GetEmbeddingsAsync(inputList, cancellationToken);
+
+            var embeddings = new GeneratedEmbeddings<Embedding<float>>();
+            foreach (var result in results)
+            {
+                embeddings.Add(new Embedding<float>(result));
+            }
+
+            return embeddings;
+        }
+
+        /// <inheritdoc/>
+        public object? GetService(Type serviceType, object? serviceKey = null)
+        {
+            if (serviceKey is not null)
+            {
+                return null;
+            }
+
+            if (serviceType == typeof(EmbeddingGeneratorMetadata))
+            {
+                return _metadata;
+            }
+
+            if (serviceType?.IsInstanceOfType(this) == true)
+            {
+                return this;
+            }
+
+            return null;
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            // Embedder disposal is managed externally or by the LM model
         }
 
         /// <summary>
@@ -47,6 +79,7 @@ namespace LMKit.Integrations.SemanticKernel.Embeddings
         internal LMKitTextEmbeddingGeneration(LM model)
         {
             _embedder = new Embedder(model);
+            _metadata = new EmbeddingGeneratorMetadata("LMKit", defaultModelId: model.Name);
         }
 
         /// <summary>
@@ -56,6 +89,7 @@ namespace LMKit.Integrations.SemanticKernel.Embeddings
         public LMKitTextEmbeddingGeneration(Embedder embedder)
         {
             _embedder = embedder;
+            _metadata = new EmbeddingGeneratorMetadata("LMKit");
         }
     }
 }

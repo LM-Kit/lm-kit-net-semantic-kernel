@@ -20,7 +20,7 @@ namespace LMKit.Integrations.SemanticKernel.TextGeneration
         /// Gets the attributes associated with the AI service.
         /// Returns an empty dictionary as attributes are not implemented.
         /// </summary>
-        IReadOnlyDictionary<string, object> IAIService.Attributes => new Dictionary<string, object>();
+        IReadOnlyDictionary<string, object?> IAIService.Attributes => new Dictionary<string, object?>();
 
         /// <summary>
         /// Asynchronously generates streaming text contents based on the specified prompt and execution settings.
@@ -33,17 +33,17 @@ namespace LMKit.Integrations.SemanticKernel.TextGeneration
         /// <returns>An asynchronous stream of <see cref="StreamingTextContent"/> containing the generated text chunks.</returns>
         async IAsyncEnumerable<StreamingTextContent> ITextGenerationService.GetStreamingTextContentsAsync(
             string prompt,
-            PromptExecutionSettings executionSettings,
-            Kernel kernel,
+            PromptExecutionSettings? executionSettings,
+            Kernel? kernel,
             [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var queue = new ConcurrentQueue<StreamingTextContent>();
             using var semaphore = new SemaphoreSlim(0);
             bool done = false;
-            Exception backgroundException = null;
+            Exception? backgroundException = null;
 
             // Event handler that enqueues text completion results and signals the semaphore.
-            void AfterTextCompletion(object sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
+            void AfterTextCompletion(object? sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
             {
                 queue.Enqueue(new StreamingTextContent(e.Text));
                 semaphore.Release();
@@ -115,8 +115,8 @@ namespace LMKit.Integrations.SemanticKernel.TextGeneration
         /// </returns>
         async Task<IReadOnlyList<TextContent>> ITextGenerationService.GetTextContentsAsync(
             string prompt,
-            PromptExecutionSettings executionSettings,
-            Kernel kernel,
+            PromptExecutionSettings? executionSettings,
+            Kernel? kernel,
             CancellationToken cancellationToken)
         {
             var promptExecutionSettings = new LMKitPromptExecutionSettings(_defaultPromptExecutionSettings, executionSettings);
@@ -140,7 +140,7 @@ namespace LMKit.Integrations.SemanticKernel.TextGeneration
         /// An optional instance of <see cref="LMKitPromptExecutionSettings"/> that provides default settings
         /// for text generation. If not provided, a new instance will be created using the specified model.
         /// </param>
-        public LMKitTextGeneration(LM model, LMKitPromptExecutionSettings defaultPromptExecutionSettings = null)
+        public LMKitTextGeneration(LM model, LMKitPromptExecutionSettings? defaultPromptExecutionSettings = null)
         {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             _defaultPromptExecutionSettings = defaultPromptExecutionSettings ?? new LMKitPromptExecutionSettings(model);

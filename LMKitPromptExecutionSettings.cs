@@ -21,7 +21,7 @@ namespace LMKit.Integrations.SemanticKernel
         private readonly RepetitionPenalty _repetitionPenalty;
         private List<string> _stopSequences;
         private TokenSampling _sampling;
-        private Grammar _grammar;
+        private Grammar? _grammar;
         private readonly LogitBias _logitBias;
         private int _maximumCompletionTokens;
         private int _resultsPerPrompt;
@@ -62,7 +62,7 @@ namespace LMKit.Integrations.SemanticKernel
         /// <summary>
         /// Gets or sets the grammar rules applied during text generation.
         /// </summary>
-        public Grammar Grammar
+        public Grammar? Grammar
         {
             get => _grammar;
             set => _grammar = value;
@@ -126,7 +126,7 @@ namespace LMKit.Integrations.SemanticKernel
         /// </summary>
         /// <param name="defaultSettings">The default settings to clone.</param>
         /// <param name="promptExecutionSettings">The prompt execution settings to override with.</param>
-        internal LMKitPromptExecutionSettings(LMKitPromptExecutionSettings defaultSettings, PromptExecutionSettings promptExecutionSettings)
+        internal LMKitPromptExecutionSettings(LMKitPromptExecutionSettings defaultSettings, PromptExecutionSettings? promptExecutionSettings)
         {
             _repetitionPenalty = defaultSettings.RepetitionPenalty.Clone();
             _stopSequences = [.. defaultSettings.StopSequences];
@@ -176,7 +176,7 @@ namespace LMKit.Integrations.SemanticKernel
                                 break;
 
                             case "TEMPERATURE":
-                                if (!(_sampling is RandomSampling))
+                                if (_sampling is not RandomSampling randomSamplingTemp)
                                 {
                                     _sampling = new RandomSampling()
                                     {
@@ -185,33 +185,34 @@ namespace LMKit.Integrations.SemanticKernel
                                 }
                                 else
                                 {
-                                    ((RandomSampling)_sampling).Temperature = reader.GetSingle();
+                                    randomSamplingTemp.Temperature = reader.GetSingle();
                                 }
                                 break;
 
                             case "TOPP":
                             case "TOP_P":
-                                if (!(_sampling is RandomSampling))
+                                if (_sampling is not RandomSampling randomSamplingTopP)
                                 {
-                                    _sampling = new RandomSampling()
+                                    randomSamplingTopP = new RandomSampling()
                                     {
                                         Temperature = 0
                                     };
+                                    _sampling = randomSamplingTopP;
                                 }
-                                ((RandomSampling)_sampling).TopP = reader.GetSingle();
-
+                                randomSamplingTopP.TopP = reader.GetSingle();
                                 break;
 
                             case "TOPK":
                             case "TOP_K":
-                                if (!(_sampling is RandomSampling))
+                                if (_sampling is not RandomSampling randomSamplingTopK)
                                 {
-                                    _sampling = new RandomSampling()
+                                    randomSamplingTopK = new RandomSampling()
                                     {
                                         Temperature = 0
                                     };
+                                    _sampling = randomSamplingTopK;
                                 }
-                                ((RandomSampling)_sampling).TopK = reader.GetInt32();
+                                randomSamplingTopK.TopK = reader.GetInt32();
                                 break;
 
                             case "FREQUENCYPENALTY":
@@ -236,7 +237,7 @@ namespace LMKit.Integrations.SemanticKernel
 
                             case "STOPSEQUENCES":
                             case "STOP_SEQUENCES":
-                                var stopSeqs = JsonSerializer.Deserialize<IList<string>>(ref reader, options) ?? Array.Empty<string>();
+                                var stopSeqs = JsonSerializer.Deserialize<IList<string>>(ref reader, options) ?? [];
                                 _stopSequences = [.. stopSeqs];
                                 break;
 

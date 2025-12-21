@@ -2,10 +2,10 @@
 using LMKit.Integrations.SemanticKernel.Embeddings;
 using LMKit.Integrations.SemanticKernel.TextGeneration;
 using LMKit.Model;
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Embeddings;
 using Microsoft.SemanticKernel.TextGeneration;
 
 namespace LMKit.Integrations.SemanticKernel
@@ -26,7 +26,7 @@ namespace LMKit.Integrations.SemanticKernel
         /// An optional instance of <see cref="LMKitPromptExecutionSettings"/> that provides default settings
         /// for text generation. If not provided, a new instance will be created using the specified model.
         /// </param>
-        public static void AddLMKitChatCompletion(this IKernelBuilder builder, LM model, LMKitPromptExecutionSettings defaultPromptExecutionSettings = null)
+        public static void AddLMKitChatCompletion(this IKernelBuilder builder, LM model, LMKitPromptExecutionSettings? defaultPromptExecutionSettings = null)
         {
             AddLMKitChatCompletion(builder, new LMKitChatCompletion(model, defaultPromptExecutionSettings));
         }
@@ -52,7 +52,7 @@ namespace LMKit.Integrations.SemanticKernel
         /// An optional instance of <see cref="LMKitPromptExecutionSettings"/> that provides default settings
         /// for text generation. If not provided, a new instance will be created using the specified model.
         /// </param>
-        public static void AddLMKitTextGeneration(this IKernelBuilder builder, LM model, LMKitPromptExecutionSettings defaultPromptExecutionSettings = null)
+        public static void AddLMKitTextGeneration(this IKernelBuilder builder, LM model, LMKitPromptExecutionSettings? defaultPromptExecutionSettings = null)
         {
             AddLMKitTextGeneration(builder, new LMKitTextGeneration(model, defaultPromptExecutionSettings));
         }
@@ -81,15 +81,13 @@ namespace LMKit.Integrations.SemanticKernel
 
         /// <summary>
         /// Adds the specified LMKit text embedding generation instance to the kernel builder.
-        /// The instance is registered as a singleton service implementing <see cref="ITextEmbeddingGenerationService"/>.
+        /// The instance is registered as a singleton service implementing <see cref="IEmbeddingGenerator{TInput, TEmbedding}"/>.
         /// </summary>
         /// <param name="builder">The kernel builder to which the text embedding generation service is added.</param>
         /// <param name="textEmbeddingGeneration">An instance of <see cref="LMKitTextEmbeddingGeneration"/> to register.</param>
         public static void AddLMKitTextEmbeddingGeneration(this IKernelBuilder builder, LMKitTextEmbeddingGeneration textEmbeddingGeneration)
         {
-#pragma warning disable SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-            builder.Services.AddSingleton<ITextEmbeddingGenerationService>(textEmbeddingGeneration);
-#pragma warning restore SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+            builder.Services.AddSingleton<IEmbeddingGenerator<string, Embedding<float>>>(textEmbeddingGeneration);
         }
     }
 }

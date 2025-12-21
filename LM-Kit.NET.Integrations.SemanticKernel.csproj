@@ -1,14 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;net8.0;net9.0</TargetFrameworks>
+		<TargetFrameworks>netstandard2.0;net8.0;net9.0;net10.0</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-		<Version>2025.2.1</Version>
+		<Version>2025.12.1</Version>
 		<RootNamespace>LMKit.Integrations.SemanticKernel</RootNamespace>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<Configurations>Debug;Release</Configurations>
 		<SignAssembly>True</SignAssembly>
+		<Nullable>enable</Nullable>
 		<AssemblyOriginatorKeyFile>LMKit.Integrations.SemanticKernel.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
 
@@ -22,8 +23,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="LM-Kit.NET" Version="2025.7.2" />
-		<PackageReference Include="Microsoft.SemanticKernel.Abstractions" Version="1.60.0" />
+		<PackageReference Include="LM-Kit.NET" Version="2025.12.4" />
+		<PackageReference Include="Microsoft.SemanticKernel.Abstractions" Version="1.68.0" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">

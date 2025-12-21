@@ -20,7 +20,7 @@ namespace LMKit.Integrations.SemanticKernel.ChatCompletion
         /// Gets the attributes associated with the AI service.
         /// Returns an empty dictionary.
         /// </summary>
-        IReadOnlyDictionary<string, object> IAIService.Attributes => new Dictionary<string, object>();
+        IReadOnlyDictionary<string, object?> IAIService.Attributes => new Dictionary<string, object?>();
 
         /// <summary>
         /// Asynchronously retrieves chat message contents based on the provided chat history and execution settings.
@@ -35,8 +35,8 @@ namespace LMKit.Integrations.SemanticKernel.ChatCompletion
         /// </returns>
         async Task<IReadOnlyList<ChatMessageContent>> IChatCompletionService.GetChatMessageContentsAsync(
             ChatHistory chatHistory,
-            PromptExecutionSettings executionSettings,
-            Kernel kernel,
+            PromptExecutionSettings? executionSettings,
+            Kernel? kernel,
             CancellationToken cancellationToken)
         {
             var promptExecutionSettings = new LMKitPromptExecutionSettings(_defaultPromptExecutionSettings, executionSettings);
@@ -66,17 +66,17 @@ namespace LMKit.Integrations.SemanticKernel.ChatCompletion
         /// </returns>
         async IAsyncEnumerable<StreamingChatMessageContent> IChatCompletionService.GetStreamingChatMessageContentsAsync(
             ChatHistory chatHistory,
-            PromptExecutionSettings executionSettings,
-            Kernel kernel,
+            PromptExecutionSettings? executionSettings,
+            Kernel? kernel,
             [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var queue = new ConcurrentQueue<StreamingChatMessageContent>();
             using var semaphore = new SemaphoreSlim(0);
             bool done = false;
-            Exception backgroundException = null;
+            Exception? backgroundException = null;
 
             // Event handler that enqueues chat message content and signals the semaphore.
-            void AfterTextCompletion(object sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
+            void AfterTextCompletion(object? sender, LMKit.TextGeneration.Events.AfterTextCompletionEventArgs e)
             {
                 queue.Enqueue(new StreamingChatMessageContent(AuthorRole.Assistant, e.Text));
                 semaphore.Release();
@@ -141,7 +141,7 @@ namespace LMKit.Integrations.SemanticKernel.ChatCompletion
         /// <param name="defaultPromptExecutionSettings">
         /// Optional default prompt execution settings. If not provided, a new instance will be created based on the model.
         /// </param>
-        public LMKitChatCompletion(LM model, LMKitPromptExecutionSettings defaultPromptExecutionSettings = null)
+        public LMKitChatCompletion(LM model, LMKitPromptExecutionSettings? defaultPromptExecutionSettings = null)
         {
             _model = model ?? throw new ArgumentNullException(nameof(model));
             _defaultPromptExecutionSettings = defaultPromptExecutionSettings ?? new LMKitPromptExecutionSettings(model);
@@ -161,15 +161,15 @@ namespace LMKit.Integrations.SemanticKernel.ChatCompletion
             {
                 if (message.Role == AuthorRole.Assistant)
                 {
-                    lmkitChatHistory.AddMessage(LMKit.TextGeneration.Chat.AuthorRole.Assistant, message.InnerContent.ToString());
+                    lmkitChatHistory.AddMessage(LMKit.TextGeneration.Chat.AuthorRole.Assistant, message.InnerContent?.ToString() ?? string.Empty);
                 }
                 else if (message.Role == AuthorRole.System)
                 {
-                    lmkitChatHistory.AddMessage(LMKit.TextGeneration.Chat.AuthorRole.System, message.InnerContent.ToString());
+                    lmkitChatHistory.AddMessage(LMKit.TextGeneration.Chat.AuthorRole.System, message.InnerContent?.ToString() ?? string.Empty);
                 }
                 else if (message.Role == AuthorRole.User)
                 {
-                    lmkitChatHistory.AddMessage(LMKit.TextGeneration.Chat.AuthorRole.User, message.Content);
+                    lmkitChatHistory.AddMessage(LMKit.TextGeneration.Chat.AuthorRole.User, message.Content ?? string.Empty);
                 }
                 else
                 {

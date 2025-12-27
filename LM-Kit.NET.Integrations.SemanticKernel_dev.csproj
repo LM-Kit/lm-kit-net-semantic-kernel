@@ -9,6 +9,7 @@
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<Configurations>Debug;Release</Configurations>
 		<SignAssembly>True</SignAssembly>
+		<AssemblyName>LM-Kit.NET.Integrations.SemanticKernel</AssemblyName>
 		<Nullable>enable</Nullable>
 		<AssemblyOriginatorKeyFile>LMKit.Integrations.SemanticKernel.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>

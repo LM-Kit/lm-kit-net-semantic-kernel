@@ -4,7 +4,7 @@
 		<LangVersion>latest</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-		<Version>2025.12.1</Version>
+		<Version>2026.1.1</Version>
 		<RootNamespace>LMKit.Integrations.SemanticKernel</RootNamespace>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<Configurations>Debug;Release</Configurations>
